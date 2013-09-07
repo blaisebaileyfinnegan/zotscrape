@@ -3,60 +3,10 @@ var async = require('async');
 var cheerio = require('cheerio');
 
 var cfg = require('./cfg/cfg');
+var output = require('./lib/output');
+var scraper = require('./lib/scraper');
 
-var debug = true;
-
-var scraper = {
-	departmentValues: function(body) {
-		// Get the values for the departments that we want
-		$ = cheerio.load(body);
-		var values = $('select[name="Dept"] > option').map(function () {
-			return $(this).val()
-		});
-		
-		values.shift() // Remove the 'ALL' option
-		if (debug) {
-			values = [values[0]];
-		}
-		
-		return values;
-	},
-	
-	department: function(body) {
-		$ = cheerio.load(body);
-		var table = $(".course-list > table");
-				
-		var collegeTitle = table.find('.college-title').text();
-		var collegeComment = table.find('.college-comment').text();
-				
-		var deptTitleElement = table.find('.dept-title');
-		var deptTitle = deptTitleElement.text()
-		if (deptTitle) {
-			var deptComment = deptTitleElement.next().text();
-		}
-				
-		var courseTitleIndices = new Array();
-		var endIndex = 0;
-		var trs = table.children();
-		trs.each(function(index) {
-			if (this.is("tr[bgcolor='#fff0ff']:has(td.CourseTitle)")) {
-				courseTitleIndices.push(index);
-			}
-		});
-		
-		if (courseTitleIndices.length > 0 ) {
-			courseTitleIndices.push(trs.length);
-		}
-		
-		// Divide our markup into distinct course sections
-		var courseBlocks = new Array();
-		for (var i = 0; i < courseTitleIndices.length - 1; i++) {
-			courseBlocks.push(trs.slice(courseTitleIndices[i], courseTitleIndices[i+1]));
-		}
-
-        console.log(courseBlocks);
-	}
-}
+scraper = new scraper(cheerio, cfg, 'AC ENG');
 
 async.waterfall([
 	function (callback) {
@@ -70,20 +20,24 @@ async.waterfall([
 		});
 	},
 	function (body, callback) {
+        // Get all the departments
 		callback(null, scraper.departmentValues(body));
 	},
 	function (values, callback) {
-		async.each(values, function (item, callback) {
+        // Request courses from each department
+		async.map(values, function (item, callback) {
 			var formdata = cfg.formdata;
 			formdata.Dept = item;
 			
 			request.post({url: cfg.url, form: formdata}, function(error, response, body) {
-				scraper.department(body);
-				callback(null);
+				var department = scraper.department(formdata.Dept, body);
+				callback(null, department);
 			});
-		}, function (err) {
-			callback(err);
+		}, function (err, departments) {
+			callback(err, departments);
 		});
 	},
 ], function (err, result) {
+    var str = JSON.stringify(result);
+    output.toFile('output.txt', str);
 });

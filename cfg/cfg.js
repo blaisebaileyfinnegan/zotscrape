@@ -29,5 +29,25 @@ module.exports = {
 		CancelledCourses: 'Exclude',
 		Bldg: '',
 		Room: ''
-	}
+	},
+
+    sectionOffsets: {
+        code: 0,
+        type: 1,
+        section: 2,
+        units: 3,
+        instructor: 4,
+        time: 5,
+        place: 6,
+        coursefinal: 7,
+        max: 8,
+        enrolled: 9,
+        waitlisted: 10,
+        req: 11,
+        nor: 12,
+        restrictions: 13,
+        textbooks: 14,
+        web: 15,
+        status: 16
+    }
 }
