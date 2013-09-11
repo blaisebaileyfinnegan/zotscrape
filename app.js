@@ -6,7 +6,7 @@ var cfg = require('./cfg/cfg');
 var output = require('./lib/output');
 var scraper = require('./lib/scraper');
 
-scraper = new scraper(cheerio, cfg, 'AC ENG');
+scraper = new scraper(cheerio, cfg, 'BATS');
 
 async.waterfall([
 	function (callback) {
@@ -25,11 +25,12 @@ async.waterfall([
 	},
 	function (values, callback) {
         // Request courses from each department
-		async.map(values, function (item, callback) {
+		async.mapSeries(values, function (item, callback) {
 			var formdata = cfg.formdata;
 			formdata.Dept = item;
 			
 			request.post({url: cfg.url, form: formdata}, function(error, response, body) {
+                console.log('Parsing ' + formdata.Dept);
 				var department = scraper.department(formdata.Dept, body);
 				callback(null, department);
 			});
