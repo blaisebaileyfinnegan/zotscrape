@@ -6,7 +6,7 @@ var cfg = require('./cfg/cfg');
 var output = require('./lib/output');
 var scraper = require('./lib/scraper');
 
-scraper = new scraper(cheerio, cfg, 'BATS');
+scraper = new scraper(cheerio, cfg);
 
 async.waterfall([
 	function (callback) {
