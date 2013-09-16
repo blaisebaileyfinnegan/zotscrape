@@ -49,5 +49,10 @@ module.exports = {
         textbooks: 14,
         web: 15,
         status: 16
+    },
+
+    quarters: {
+        F13: "2013-92",
+        S13: "2013-14"
     }
 }

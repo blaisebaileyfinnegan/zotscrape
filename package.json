@@ -1,11 +1,12 @@
 {
-    "version": "0.1.0",
-    "name": "zotscrape",
-    "description": "A UCI Schedule of Classes scraper for node",
-    "dependencies": {
-        "async": "*",
-        "cheerio": "*",
-        "request": "*",
-        "mysql": "*"
-    }
+  "version": "0.1.0",
+  "name": "zotscrape",
+  "description": "A UCI Schedule of Classes scraper for node",
+  "dependencies": {
+    "async": "*",
+    "cheerio": "*",
+    "request": "*",
+    "mysql": "*",
+    "migrate": "~0.1.3"
+  }
 }
