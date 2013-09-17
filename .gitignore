@@ -9,6 +9,7 @@ lib-cov
 *.gz
 *.swp
 
+cfg/db.js
 pids
 logs
 results

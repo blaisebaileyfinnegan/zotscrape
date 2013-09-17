@@ -7,6 +7,9 @@ var output = require('./lib/output');
 var scraper = require('./lib/scraper');
 var post = require('./lib/post');
 
+// Output dependency
+var db = require('./lib/db');
+
 scraper = new scraper(cheerio, cfg, 'AC ENG');
 
 function deptsIterator(formdata) {
@@ -56,6 +59,7 @@ async.waterfall([
 
             async.mapSeries(quarter.depts, deptsIterator(formdata), function (err, departments) {
                 // Departments are done for this quarter
+                console.log(quarter.termCode);
                 callback(err, {
                     quarter: quarter.termCode,
                     departments: departments
@@ -67,6 +71,7 @@ async.waterfall([
 		});
 	},
 ], function (err, result) {
+    // Output to whatever
     var str = JSON.stringify(result);
     output.toFile('output.txt', str);
 });
