@@ -1,12 +1,13 @@
 CREATE TABLE departments (
     dept_id INT NOT NULL AUTO_INCREMENT,
-    quarter VARCHAR(3),
+    quarter VARCHAR(3) NOT NULL,
     short_name VARCHAR(255) NOT NULL,
     college_title VARCHAR(255),
     college_comment TEXT,
     dept_title VARCHAR(255),
     dept_comment TEXT,
-    PRIMARY KEY (dept_id, short_name, quarter)
+    PRIMARY KEY (dept_id),
+    UNIQUE KEY departments_key (quarter, short_name)
 );
 
 CREATE TABLE courses (
@@ -15,7 +16,8 @@ CREATE TABLE courses (
     number VARCHAR(16) NOT NULL,
     title VARCHAR(255) NOT NULL,
     PRIMARY KEY (course_id),
-    FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+    FOREIGN KEY (dept_id) REFERENCES departments(dept_id),
+    UNIQUE KEY courses_key (dept_id, number)
 );
 
 CREATE TABLE sections (
@@ -35,8 +37,9 @@ CREATE TABLE sections (
     textbooks VARCHAR(255),
     web VARCHAR(255),
     status ENUM('full', 'newonly', 'waitl', 'open'),
-    PRIMARY KEY (section_id, ccode),
-    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+    PRIMARY KEY (section_id),
+    FOREIGN KEY (course_id) REFERENCES courses(course_id),
+    UNIQUE KEY sections_key (course_id, ccode)
 );
 
 CREATE TABLE finals (
@@ -45,15 +48,9 @@ CREATE TABLE finals (
     day VARCHAR(60) NOT NULL,
     start TIME NOT NULL,
     end TIME NOT NULL,
-    sunday BOOLEAN NOT NULL DEFAULT false,
-    monday BOOLEAN NOT NULL DEFAULT false,
-    tuesday BOOLEAN NOT NULL DEFAULT false,
-    wednesday BOOLEAN NOT NULL DEFAULT false,
-    thursday BOOLEAN NOT NULL DEFAULT false,
-    friday BOOLEAN NOT NULL DEFAULT false,
-    saturday BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (final_id),
-    FOREIGN KEY (section_id) REFERENCES sections(section_id)
+    FOREIGN KEY (section_id) REFERENCES sections(section_id),
+    UNIQUE KEY finals_key (section_id) 
 );
 
 
@@ -62,6 +59,7 @@ CREATE TABLE meetings (
     section_id INT NOT NULL,
     start TIME NOT NULL,
     end TIME NOT NULL,
+    place VARCHAR(60),
     sunday BOOLEAN NOT NULL DEFAULT false,
     monday BOOLEAN NOT NULL DEFAULT false,
     tuesday BOOLEAN NOT NULL DEFAULT false,
@@ -70,5 +68,6 @@ CREATE TABLE meetings (
     friday BOOLEAN NOT NULL DEFAULT false,
     saturday BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (meeting_id),
-    FOREIGN KEY (section_id) REFERENCES sections(section_id)
+    FOREIGN KEY (section_id) REFERENCES sections(section_id),
+    UNIQUE KEY meetings_key (section_id, start, end, sunday, monday, tuesday, wednesday, thursday, friday, saturday)
 );

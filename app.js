@@ -10,7 +10,7 @@ var post = require('./lib/post');
 // Output dependency
 var db = require('./lib/db');
 
-scraper = new scraper(cheerio, cfg, 'AC ENG');
+scraper = new scraper(cheerio, cfg);
 
 function deptsIterator(formdata) {
     return function (dept, callback) {
@@ -74,4 +74,10 @@ async.waterfall([
     // Output to whatever
     var str = JSON.stringify(result);
     output.toFile('output.txt', str);
+
+    // Output to db
+    output.toDB(db, async, result, function(err) {
+        // On finish, end our connection
+        db.destroy();
+    });
 });

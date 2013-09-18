@@ -53,6 +53,5 @@ module.exports = {
 
     quarters: {
         F13: "2013-92",
-        S13: "2013-14"
     }
 }
