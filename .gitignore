@@ -9,7 +9,6 @@ lib-cov
 *.gz
 *.swp
 
-migrations/.migrate
 cfg/db.js
 pids
 logs
