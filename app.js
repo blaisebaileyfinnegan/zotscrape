@@ -10,7 +10,7 @@ var post = require('./lib/post');
 // Output dependency
 var db = require('./lib/db');
 
-scraper = new scraper(cheerio, cfg, 'AFAM');
+scraper = new scraper(cheerio, cfg);
 
 function deptsIterator(formdata) {
     return function (dept, callback) {
