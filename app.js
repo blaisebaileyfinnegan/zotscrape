@@ -26,51 +26,9 @@ function deptsIterator(formdata) {
     }
 }
 
-// One step at a time
-async.waterfall([
-	function (callback) {
-		// Request the main WebSOC page and pass the body
-        post.requestMain(request, cfg.url, callback);
-	},
-	function (body, callback) {
-        // Get all the departments
-		callback(null, scraper.departmentValues(body));
-	},
-    function (values, callback) {
-        // Nest departments within each quarter
-        var quarters = [];
-        for (quarter in cfg.quarters) {
-            quarter = {
-                termCode: quarter,
-                yearTerm: cfg.quarters[quarter],
-                depts: values
-            }
-            
-            quarters.push(quarter);
-        }
+var finalStep = function (err, result) {
+    if (err) throw err;
 
-        callback(null, quarters);
-    },
-	function (quarters, next) {
-        // Request courses from each department for each quarter
-		async.mapSeries(quarters, function (quarter, callback) {
-            var formdata = cfg.formdata;
-            formdata.YearTerm = quarter.yearTerm;
-
-            async.mapSeries(quarter.depts, deptsIterator(formdata), function (err, departments) {
-                // Departments are done for this quarter
-                console.log(quarter.termCode);
-                callback(err, {
-                    quarter: quarter.termCode,
-                    departments: departments
-                });
-            });
-		}, function (err, quarters) {
-            // All quarters are done
-			next(err, quarters);
-		});
-	},
-], function (err, result) {
     // Output to whatever
     var str = JSON.stringify(result);
     output.toFile('output.txt', str);
@@ -80,4 +38,63 @@ async.waterfall([
         // On finish, end our connection
         db.destroy();
     });
-});
+}
+
+if (process.argv.length == 3) {
+    var file = __dirname + '/' + process.argv[2];
+    var fs = require('fs');
+
+    fs.readFile(file, 'utf8', function (err, data) {
+        if (err) throw err;
+
+        data = JSON.parse(data);
+        finalStep(null, data);
+    });
+
+} else {
+    // One step at a time
+    async.waterfall([
+        function (callback) {
+            // Request the main WebSOC page and pass the body
+            post.requestMain(request, cfg.url, callback);
+        },
+        function (body, callback) {
+            // Get all the departments
+            callback(null, scraper.departmentValues(body));
+        },
+        function (values, callback) {
+            // Nest departments within each quarter
+            var quarters = [];
+            for (quarter in cfg.quarters) {
+                quarter = {
+                    termCode: quarter,
+                    yearTerm: cfg.quarters[quarter],
+                    depts: values
+                }
+                
+                quarters.push(quarter);
+            }
+
+            callback(null, quarters);
+        },
+        function (quarters, next) {
+            // Request courses from each department for each quarter
+            async.mapSeries(quarters, function (quarter, callback) {
+                var formdata = cfg.formdata;
+                formdata.YearTerm = quarter.yearTerm;
+
+                async.mapSeries(quarter.depts, deptsIterator(formdata), function (err, departments) {
+                    // Departments are done for this quarter
+                    console.log(quarter.termCode);
+                    callback(err, {
+                        quarter: quarter.termCode,
+                        departments: departments
+                    });
+                });
+            }, function (err, quarters) {
+                // All quarters are done
+                next(err, quarters);
+            });
+        },
+    ], finalStep);
+}
