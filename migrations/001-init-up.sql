@@ -1,7 +1,7 @@
 CREATE TABLE departments (
     dept_id INT NOT NULL AUTO_INCREMENT,
     quarter VARCHAR(3) NOT NULL,
-    short_name VARCHAR(255) NOT NULL,
+    short_name VARCHAR(32) NOT NULL,
     college_title VARCHAR(255),
     college_comment TEXT,
     dept_title VARCHAR(255),
@@ -13,11 +13,11 @@ CREATE TABLE departments (
 CREATE TABLE courses (
     course_id INT NOT NULL AUTO_INCREMENT,
     dept_id INT NOT NULL,
-    number VARCHAR(16) NOT NULL,
-    title VARCHAR(255) NOT NULL,
+    number VARCHAR(10) NOT NULL,
+    title VARCHAR(32) NOT NULL,
     PRIMARY KEY (course_id),
     FOREIGN KEY (dept_id) REFERENCES departments(dept_id),
-    UNIQUE KEY courses_key (dept_id, number)
+    UNIQUE KEY courses_key (dept_id, number, title)
 );
 
 CREATE TABLE sections (
