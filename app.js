@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var request = require('request');
 var async = require('async');
 var cheerio = require('cheerio');
@@ -6,11 +8,12 @@ var cfg = require('./cfg/cfg');
 var output = require('./lib/output');
 var scraper = require('./lib/scraper');
 var post = require('./lib/post');
+var parser = require('./lib/parser');
 
 // Output dependency
 var db = require('./lib/db');
 
-scraper = new scraper(cheerio, cfg);
+scraper = new scraper(cheerio, cfg, parser, async);
 
 function deptsIterator(formdata) {
     return function (dept, callback) {
