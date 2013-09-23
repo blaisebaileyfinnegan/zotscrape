@@ -90,7 +90,10 @@ if (process.argv.length == 3) {
                     // Departments are done for this quarter
                     console.log(quarter.termCode);
                     callback(err, {
-                        quarter: quarter.termCode,
+                        quarter: {
+                            quarter: quarter.termCode,
+                            yearTerm: quarter.yearTerm
+                        },
                         departments: departments
                     });
                 });
