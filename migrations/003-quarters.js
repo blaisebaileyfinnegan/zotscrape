@@ -12,7 +12,6 @@ exports.up = function(next) {
         connection.query(queries, function (err, results) {
             if (err) throw err;
 
-            connection.destroy();
             next();
         });
 
@@ -27,7 +26,6 @@ exports.down = function(next) {
         connection.query(queries, function (err, results) {
             if (err) throw err;
 
-            connection.destroy();
             next();
         });
     });
