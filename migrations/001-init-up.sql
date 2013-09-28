@@ -12,10 +12,11 @@ CREATE TABLE departments (
 
 CREATE TABLE courses (
     course_id INT NOT NULL AUTO_INCREMENT,
+    short_name VARCHAR(32) NOT NULL,
     number VARCHAR(10) NOT NULL,
     title VARCHAR(32) NOT NULL,
     PRIMARY KEY (course_id),
-    UNIQUE KEY courses_key (number, title)
+    UNIQUE KEY courses_key (short_name, number, title)
 );
 
 CREATE TABLE departments2courses(
