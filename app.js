@@ -13,7 +13,7 @@ var parser = require('./lib/parser');
 // Output dependency
 var db = require('./lib/db');
 
-scraper = new scraper(cheerio, cfg, parser, 'NUR SCI');
+scraper = new scraper(cheerio, cfg, parser);
 
 function deptsIterator(formdata) {
     return function (dept, callback) {
