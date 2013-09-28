@@ -12,12 +12,18 @@ CREATE TABLE departments (
 
 CREATE TABLE courses (
     course_id INT NOT NULL AUTO_INCREMENT,
-    dept_id INT NOT NULL,
     number VARCHAR(10) NOT NULL,
     title VARCHAR(32) NOT NULL,
     PRIMARY KEY (course_id),
+    UNIQUE KEY courses_key (number, title)
+);
+
+CREATE TABLE departments2courses(
+    dept_id INT NOT NULL,
+    course_id INT NOT NULL,
+    PRIMARY KEY (dept_id, course_id),
     FOREIGN KEY (dept_id) REFERENCES departments(dept_id),
-    UNIQUE KEY courses_key (dept_id, number, title)
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
 );
 
 CREATE TABLE sections (
