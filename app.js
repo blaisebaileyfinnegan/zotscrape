@@ -74,7 +74,7 @@ if (process.argv.length == 3) {
                     yearTerm: cfg.quarters[quarter],
                     depts: values
                 }
-                
+
                 quarters.push(quarter);
             }
 
