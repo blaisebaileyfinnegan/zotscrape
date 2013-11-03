@@ -10,27 +10,38 @@ var scraper = require('./lib/scraper');
 var post = require('./lib/post');
 var parser = require('./lib/parser');
 
+var workerFarm = require('worker-farm');
+var workers = workerFarm(require.resolve('./lib/worker'));
+
+var numCpus = require('os').cpus().length;
+
 // Output dependency
 var db = require('./lib/db');
 
 scraper = new scraper(cheerio, cfg, parser);
 
-function deptsIterator(formdata) {
+function deptsIterator(yearTerm) {
     return function (dept, callback) {
-        formdata.Dept = dept;
+        var local = cfg.formdata(yearTerm);
+        local.Dept = dept;
+        console.log('Iterating on ' + dept);
 
-        post.requestDepartment(request, cfg.url, formdata, function(error, body) {
+        post.requestDepartment(request, cfg.url, local, function(error, body) {
             if (error) throw error;
 
             // Request succeeded. Parse.
-            var department = scraper.department(formdata.Dept, body);
-            callback(null, department);
+            workers(local.Dept, body, function(err, result) {
+                if (err) throw err;
+                callback(null, result);
+            });
         });
     }
 }
 
 var finalStep = function (err, result) {
     if (err) throw err;
+
+    workerFarm.end(workers);
 
     // Output to whatever
     var str = JSON.stringify(result);
@@ -83,10 +94,7 @@ if (process.argv.length == 3) {
         function (quarters, next) {
             // Request courses from each department for each quarter
             async.mapSeries(quarters, function (quarter, callback) {
-                var formdata = cfg.formdata;
-                formdata.YearTerm = quarter.yearTerm;
-
-                async.mapSeries(quarter.depts, deptsIterator(formdata), function (err, departments) {
+                async.mapLimit(quarter.depts, numCpus, deptsIterator(quarter.yearTerm), function (err, departments) {
                     // Departments are done for this quarter
                     console.log(quarter.termCode);
                     callback(err, {

@@ -3,6 +3,7 @@ var cfg = require('./../cfg/cfg');
 var assert = require('assert');
 var Scraper = require('./../lib/scraper');
 var parser = require('./../lib/parser');
+var worker = require('./../lib/worker');
 var fs = require('fs');
 
 suite('Scraper', function() {
@@ -29,9 +30,10 @@ suite('Scraper', function() {
             var correct = fs.readFileSync(__dirname + '/static/nursingF13.json', {encoding: 'utf8'});
             correct = JSON.parse(correct);
 
-            var department = this.scraper.department('NUR SCI', html);
-            
-            assert.equal(JSON.stringify(department), JSON.stringify(correct));
+            worker('NUR SCI', html, function(err, result) {
+                var department = result;
+                assert.equal(JSON.stringify(department), JSON.stringify(correct));
+            });
         });
     });
 });
