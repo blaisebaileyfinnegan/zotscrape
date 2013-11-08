@@ -3,9 +3,4 @@ zotscraper
 
 WebSOC scraper for nodejs
 
-### Dependencies
-- async
-- cheerio
-- request
-- mysql (for DB output)
-- migrate (for DB output)
+[![Build Status](https://travis-ci.org/blaisebaileyfinnegan/zotscrape.png?branch=master)](https://travis-ci.org/blaisebaileyfinnegan/zotscrape)
