@@ -2,6 +2,9 @@
   "version": "0.1.0",
   "name": "zotscrape",
   "description": "A UCI Schedule of Classes scraper for node",
+  "scripts": {
+    "test": "mocha test"
+  },
   "dependencies": {
     "async": "*",
     "cheerio": "*",
